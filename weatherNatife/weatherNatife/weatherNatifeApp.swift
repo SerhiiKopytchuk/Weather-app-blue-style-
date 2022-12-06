@@ -11,7 +11,10 @@ import SwiftUI
 struct weatherNatifeApp: App {
     var body: some Scene {
         WindowGroup {
+            let weatherViewModel = WeatherViewModel()
+
             ContentView()
+                .environmentObject(weatherViewModel)
         }
     }
 }

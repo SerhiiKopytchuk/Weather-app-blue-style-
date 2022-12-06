@@ -8,6 +8,9 @@
 import SwiftUI
 
 struct ContentView: View {
+
+    @EnvironmentObject var weatherViewModel: WeatherViewModel
+
     var body: some View {
         VStack {
             Image(systemName: "globe")
@@ -16,11 +19,17 @@ struct ContentView: View {
             Text("Hello, world!")
         }
         .padding()
+        .onAppear {
+            weatherViewModel.getForecastWeather(competition: { _ in
+                
+            })
+        }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            .environmentObject(WeatherViewModel())
     }
 }
