@@ -20,6 +20,7 @@
 		401D496D293F556900A621EF /* WeatherViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401D496C293F556900A621EF /* WeatherViewModel.swift */; };
 		401D4970293F5F8700A621EF /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 401D496F293F5F8700A621EF /* SDWebImageSwiftUI */; };
 		401D4972293F5FB400A621EF /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401D4971293F5FB400A621EF /* HomeView.swift */; };
+		401D4975293F60EB00A621EF /* Color+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401D4974293F60EB00A621EF /* Color+Extension.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -55,6 +56,7 @@
 		401D496A293F52C600A621EF /* Weather.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weather.swift; sourceTree = "<group>"; };
 		401D496C293F556900A621EF /* WeatherViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewModel.swift; sourceTree = "<group>"; };
 		401D4971293F5FB400A621EF /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		401D4974293F60EB00A621EF /* Color+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extension.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +108,7 @@
 		401D4937293F414700A621EF /* weatherNatife */ = {
 			isa = PBXGroup;
 			children = (
+				401D4973293F60DE00A621EF /* Extensions */,
 				401D4965293F456300A621EF /* ViewModel */,
 				401D4964293F455D00A621EF /* View */,
 				401D4962293F455200A621EF /* Model */,
@@ -166,6 +169,14 @@
 				401D496C293F556900A621EF /* WeatherViewModel.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		401D4973293F60DE00A621EF /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				401D4974293F60EB00A621EF /* Color+Extension.swift */,
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -311,6 +322,7 @@
 				401D4967293F45CA00A621EF /* CurrentWeather.swift in Sources */,
 				401D4939293F414700A621EF /* weatherNatifeApp.swift in Sources */,
 				401D496B293F52C600A621EF /* Weather.swift in Sources */,
+				401D4975293F60EB00A621EF /* Color+Extension.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
