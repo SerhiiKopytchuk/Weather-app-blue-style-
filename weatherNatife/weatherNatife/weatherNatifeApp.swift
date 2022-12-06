@@ -16,8 +16,7 @@ struct weatherNatifeApp: App {
             ContentView()
                 .environmentObject(weatherViewModel)
                 .onAppear {
-                    weatherViewModel.getForecastWeather { _ in }
-                    weatherViewModel.getCurrentWeather { _ in }
+                    weatherViewModel.getWeather { _ in }
                 }
         }
     }
