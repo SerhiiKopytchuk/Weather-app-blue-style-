@@ -29,7 +29,9 @@ struct Coord: Codable {
 }
 
 // MARK: - List
-struct List: Codable {
+struct List: Codable, Identifiable {
+
+    let id = UUID().uuidString
     let dt: Int
     let main: MainClass
     let weather: [Weather]

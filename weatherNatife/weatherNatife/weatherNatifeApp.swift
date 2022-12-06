@@ -11,7 +11,14 @@ import SwiftUI
 struct weatherNatifeApp: App {
     var body: some Scene {
         WindowGroup {
+            let weatherViewModel = WeatherViewModel()
+
             ContentView()
+                .environmentObject(weatherViewModel)
+                .onAppear {
+                    weatherViewModel.getForecastWeather { _ in }
+                    weatherViewModel.getCurrentWeather { _ in }
+                }
         }
     }
 }
