@@ -11,16 +11,20 @@ class WeatherViewModel: ObservableObject {
 
     @Published var weather: Weather?
 
-    let weatherUrl = URL(string: "https://api.weatherapi.com/v1/forecast.json?key=d0a9ecd662d7487b911111422221903&q=London&days=10&aqi=no&alerts=no")
+    var weatherUrl = URL(string: "https://api.weatherapi.com/v1/forecast.json?key=d0a9ecd662d7487b911111422221903&q=London&days=10&aqi=no&alerts=no")
 
     let notificationCenter = NotificationCenter.default
 
-    var maxAndMin: String {
-        let max = String(self.weather?.forecast.forecastday.first?.day.maxtempC ?? 0.0)
-        let min = String(self.weather?.forecast.forecastday.first?.day.mintempC ?? 0.0)
+    var locationManager = LocationManager()
 
-        return "\(max)°/\(min)°"
+    var userLatitude: String {
+        return "\(locationManager.lastLocation?.coordinate.latitude ?? 0)"
     }
+
+    var userLongitude: String {
+        return "\(locationManager.lastLocation?.coordinate.longitude ?? 0)"
+    }
+
 
 
     func getWeather(competition: (Error?) -> Void) {
@@ -28,7 +32,7 @@ class WeatherViewModel: ObservableObject {
         let task = URLSession.shared.dataTask(with: weatherUrl) { data, response, error in
             guard let data, error == nil else { return }
 
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [self] in
 
                 do {
                     self.weather = try JSONDecoder().decode(Weather.self, from: data)
@@ -40,6 +44,11 @@ class WeatherViewModel: ObservableObject {
 
         }
         task.resume()
+    }
+
+    func getCurrentLocation() {
+        self.weatherUrl = URL(string: "https://api.weatherapi.com/v1/forecast.json?key=d0a9ecd662d7487b911111422221903&q=\(userLatitude),\(userLongitude)&days=10&aqi=no&alerts=no")
+        getWeather { _ in }
     }
     
 }

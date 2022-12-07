@@ -14,6 +14,7 @@
 		401A7CB02940820E007F6BF3 /* HourScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401A7CAF2940820E007F6BF3 /* HourScrollView.swift */; };
 		401A7CB229408941007F6BF3 /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401A7CB129408941007F6BF3 /* View+Extension.swift */; };
 		401A7CB429408AD6007F6BF3 /* AdaptiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401A7CB329408AD6007F6BF3 /* AdaptiveView.swift */; };
+		401A7CB62940A81C007F6BF3 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401A7CB52940A81C007F6BF3 /* LocationManager.swift */; };
 		401D4939293F414700A621EF /* weatherNatifeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401D4938293F414700A621EF /* weatherNatifeApp.swift */; };
 		401D493B293F414700A621EF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401D493A293F414700A621EF /* ContentView.swift */; };
 		401D493D293F414800A621EF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 401D493C293F414800A621EF /* Assets.xcassets */; };
@@ -55,6 +56,7 @@
 		401A7CAF2940820E007F6BF3 /* HourScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HourScrollView.swift; sourceTree = "<group>"; };
 		401A7CB129408941007F6BF3 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		401A7CB329408AD6007F6BF3 /* AdaptiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdaptiveView.swift; sourceTree = "<group>"; };
+		401A7CB52940A81C007F6BF3 /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
 		401D4935293F414700A621EF /* weatherNatife.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = weatherNatife.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		401D4938293F414700A621EF /* weatherNatifeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = weatherNatifeApp.swift; sourceTree = "<group>"; };
 		401D493A293F414700A621EF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -70,6 +72,7 @@
 		401D4971293F5FB400A621EF /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		401D4974293F60EB00A621EF /* Color+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extension.swift"; sourceTree = "<group>"; };
 		401D4976293F7B1D00A621EF /* HourListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HourListRow.swift; sourceTree = "<group>"; };
+		40DF6C002940B17B00F0B2DF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		40F3EBD3293FA66B0088F8EE /* DayListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayListRow.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -122,6 +125,7 @@
 		401D4937293F414700A621EF /* weatherNatife */ = {
 			isa = PBXGroup;
 			children = (
+				40DF6C002940B17B00F0B2DF /* Info.plist */,
 				401D4973293F60DE00A621EF /* Extensions */,
 				401D4965293F456300A621EF /* ViewModel */,
 				401D4964293F455D00A621EF /* View */,
@@ -184,6 +188,7 @@
 			isa = PBXGroup;
 			children = (
 				401D496C293F556900A621EF /* WeatherViewModel.swift */,
+				401A7CB52940A81C007F6BF3 /* LocationManager.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -340,6 +345,7 @@
 				401A7CB02940820E007F6BF3 /* HourScrollView.swift in Sources */,
 				401A7CA8294077B6007F6BF3 /* String+Extension.swift in Sources */,
 				401A7CAC29407A4E007F6BF3 /* DayDetailedView.swift in Sources */,
+				401A7CB62940A81C007F6BF3 /* LocationManager.swift in Sources */,
 				401D496D293F556900A621EF /* WeatherViewModel.swift in Sources */,
 				401A7CAA294077E0007F6BF3 /* Date+Extension.swift in Sources */,
 				401D493B293F414700A621EF /* ContentView.swift in Sources */,
@@ -512,6 +518,8 @@
 				DEVELOPMENT_TEAM = H6466NBM9Y;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = weatherNatife/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -541,6 +549,8 @@
 				DEVELOPMENT_TEAM = H6466NBM9Y;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = weatherNatife/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

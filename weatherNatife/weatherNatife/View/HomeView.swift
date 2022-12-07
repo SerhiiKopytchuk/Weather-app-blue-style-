@@ -21,6 +21,7 @@ struct HomeView: View {
     let imageWidth: CGFloat
 
     let notificationCenter = NotificationCenter.default
+    @StateObject var locationManager = LocationManager()
 
     @State var currentDay: Forecastday?
 
@@ -85,7 +86,7 @@ struct HomeView: View {
             }
             .clipShape(Rectangle())
             .frame(width: screenWidth, height: headerHeight)
-            .offset(y: receivedData ? 0 : -headerHeight)
+            .offset(y: receivedData ? 0 : (-headerHeight - 20))
             .background {
                     Color.darkBlue
                         .frame(height: screenWidth)
@@ -96,8 +97,9 @@ struct HomeView: View {
             VStack(spacing: 0) {
                 HourScrollView(currentDay: $currentDay)
                 .clipShape(Rectangle())
-                .frame(width: screenWidth, height: hourlyForecastHeight)
-                .offset(x: receivedData ? 0 : screenWidth)
+                .frame(maxWidth: .infinity)
+                .frame( height: hourlyForecastHeight)
+                .offset(x: receivedData ? 0 : (screenWidth + 20))
                 .background {
                     Color.blue
                 }
@@ -105,7 +107,7 @@ struct HomeView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(spacing: 0) {
                         ForEach(  weatherViewModel.weather?.forecast.forecastday ?? [], id: \.id) { day in
-                            DayListRow(day: day, currentDay: $currentDay)
+                            DayListRow(day: day, currentDay: $currentDay, isVertical: $isVertical)
                                 .padding(.horizontal)
                                 .anchorPreference(key: BoundsPreference.self, value: .bounds, transform: { anchor in
                                     return [(day.id  ): anchor]
@@ -127,13 +129,14 @@ struct HomeView: View {
                     }
                 }
                 .clipShape(Rectangle())
-                .frame(width: screenWidth)
-                .frame(maxHeight: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .readSize { size in
                     self.daysViewHeight = size.height
                 }
-                .offset(y: receivedData ? 0 : daysViewHeight)
+                .offset(y: receivedData ? 0 : (daysViewHeight + 20))
             }
+            .ignoresSafeArea()
+
         }
         .onAppear {
             self.notificationCenter.addObserver(forName:  Notification.Name("receivedData"), object: nil, queue: .main) { notification in
@@ -167,16 +170,22 @@ struct HomeView: View {
                 .font(.title2)
 
             Spacer()
-            Image("ic_my_location")
-                .foregroundColor(.white)
-                .font(.title2)
+
+            Button {
+                self.weatherViewModel.getCurrentLocation()
+            } label: {
+                Image("ic_my_location")
+                    .foregroundColor(.white)
+                    .font(.title2)
+            }
+
         }
         .padding(.horizontal)
         .frame(maxHeight: .infinity, alignment: .top)
     }
 
     @ViewBuilder private func highlightedDay(for highlightDay: Forecastday, rect: CGRect) -> some View {
-        DayListRow(day: highlightDay, currentDay: $currentDay)
+        DayListRow(day: highlightDay, currentDay: $currentDay, isVertical: $isVertical)
             .padding(.horizontal)
             .background {
                 Rectangle()

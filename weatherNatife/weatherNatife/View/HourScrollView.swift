@@ -18,6 +18,7 @@ struct HourScrollView: View {
                     if hour.time.hourlyToDate >= Date() {
                         HourListRow(hourForecast: hour)
                             .padding(.horizontal, 15)
+                            .padding(.trailing, hour == currentDay?.hour.last ? 35 : 0)
                     }
                 }
             }

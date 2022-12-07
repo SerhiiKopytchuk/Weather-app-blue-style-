@@ -13,6 +13,7 @@ struct DayListRow: View {
     let day: Forecastday
 
     @Binding var currentDay: Forecastday?
+    @Binding var isVertical: Bool
 
     let maxAndMin: String
 
@@ -20,7 +21,7 @@ struct DayListRow: View {
         return day.id == currentDay?.id
     }
 
-    init(day: Forecastday, currentDay: Binding<Forecastday?>) {
+    init(day: Forecastday, currentDay: Binding<Forecastday?>, isVertical: Binding<Bool>) {
         self.day = day
         self._currentDay = currentDay
 
@@ -28,6 +29,7 @@ struct DayListRow: View {
         let min = day.day.mintempC
 
         self.maxAndMin = "\(max)°/\(min)°"
+        self._isVertical = isVertical
     }
 
     var body: some View {
@@ -41,6 +43,7 @@ struct DayListRow: View {
                 .font(.title2)
                 .foregroundColor(isCurrentDay ? .blue : .black)
             Spacer()
+
             WebImage(url: day.day.condition.icon.toImageURL)
         }
         .contentShape(Rectangle())
@@ -49,6 +52,7 @@ struct DayListRow: View {
                 currentDay = day
             }
         }
+        .padding(.trailing , isVertical ? 0 : 35)
     }
 }
 
