@@ -13,6 +13,8 @@ class WeatherViewModel: ObservableObject {
 
     let weatherUrl = URL(string: "https://api.weatherapi.com/v1/forecast.json?key=d0a9ecd662d7487b911111422221903&q=London&days=10&aqi=no&alerts=no")
 
+    let notificationCenter = NotificationCenter.default
+
     var maxAndMin: String {
         let max = String(self.weather?.forecast.forecastday.first?.day.maxtempC ?? 0.0)
         let min = String(self.weather?.forecast.forecastday.first?.day.mintempC ?? 0.0)
@@ -30,7 +32,7 @@ class WeatherViewModel: ObservableObject {
 
                 do {
                     self.weather = try JSONDecoder().decode(Weather.self, from: data)
-
+                    self.notificationCenter.post(name: Notification.Name("receivedData"), object: nil)
                 } catch {
                     print(error)
                 }
