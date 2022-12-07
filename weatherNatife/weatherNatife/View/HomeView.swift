@@ -8,8 +8,11 @@
 import SwiftUI
 import SDWebImageSwiftUI
 import Foundation
+import CoreLocation
 
 struct HomeView: View {
+
+    // MARK: - variables
 
     @EnvironmentObject var weatherViewModel: WeatherViewModel
 
@@ -33,6 +36,9 @@ struct HomeView: View {
 
     @State private var isVertical = false
 
+    @State var showBottomSheet = false
+
+    // MARK: - init
 
     init() {
         let width = UIScreen.main.bounds.size.width
@@ -64,6 +70,7 @@ struct HomeView: View {
 
     }
 
+    // MARK: - Body
     var body: some View {
         AdaptiveView {
 
@@ -138,6 +145,11 @@ struct HomeView: View {
             .ignoresSafeArea()
 
         }
+        .sheet(isPresented: $showBottomSheet) {
+            ChooseLocationView(isOpen: $showBottomSheet, location: CLLocation(latitude: weatherViewModel.userLatitudeDouble, longitude: weatherViewModel.userLongitudeDouble))
+                        .presentationDetents([.large])
+                        .presentationDragIndicator(.visible)
+                }
         .onAppear {
             self.notificationCenter.addObserver(forName:  Notification.Name("receivedData"), object: nil, queue: .main) { notification in
                 self.currentDay = weatherViewModel.weather?.forecast.forecastday.first
@@ -160,14 +172,20 @@ struct HomeView: View {
         }
     }
 
+     // MARK: - ViewBuilders
+
     @ViewBuilder private var header: some View {
         HStack {
-            Image("ic_place")
-                .foregroundColor(.white)
-                .font(.title2)
-            Text(weatherViewModel.weather?.location.name ?? "")
-                .foregroundColor(.white)
-                .font(.title2)
+            Button {
+                self.showBottomSheet = true
+            } label: {
+                Image("ic_place")
+                    .foregroundColor(.white)
+                    .font(.title2)
+                Text(weatherViewModel.weather?.location.name ?? "")
+                    .foregroundColor(.white)
+                    .font(.title2)
+            }
 
             Spacer()
 
