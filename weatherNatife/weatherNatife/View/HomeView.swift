@@ -97,7 +97,7 @@ struct HomeView: View {
                                 .font(.title3)
                                 .foregroundColor(.white)
 
-                            Text("\(weatherViewModel.weather?.current.windKph ?? 0)Kp/h")
+                            Text("\(Int(weatherViewModel.weather?.current.windKph ?? 0))Kp/h")
                                 .font(.title3)
                                 .foregroundColor(.white)
                                 .bold()
@@ -110,7 +110,7 @@ struct HomeView: View {
 
             }
             .clipShape(Rectangle())
-            .frame(maxWidth: .infinity)
+            .frame(maxWidth: .infinity, alignment: .center)
             .frame(height: headerHeight)
             .background {
                 Color.darkBlue
@@ -147,27 +147,27 @@ struct HomeView: View {
                             })
                     }
                 }
+                .overlayPreferenceValue(BoundsPreference.self) { values in
+                    if let currentDay {
+                            if let preference = values.first(where: { item in
+                                item.key == currentDay.id
+                            }) {
+                                GeometryReader { proxy in
+                                    let rect = proxy[preference.value]
+                                    highlightedDay(for: currentDay, rect: rect)
+                                }
+                                .transition(.asymmetric(insertion: .identity, removal: .offset(x: 1)))
+                            }
+                    }
+                }
             }
             .clipShape(Rectangle())
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .onChange(of: weatherViewModel.weather?.forecast.forecastday ?? [], perform: { forecastDays in
             self.currentDay = forecastDays.first
-
         })
-        .overlayPreferenceValue(BoundsPreference.self) { values in
-            if let currentDay {
-                    if let preference = values.first(where: { item in
-                        item.key == currentDay.id
-                    }) {
-                        GeometryReader { proxy in
-                            let rect = proxy[preference.value]
-                            highlightedDay(for: currentDay, rect: rect)
-                        }
-                        .transition(.asymmetric(insertion: .identity, removal: .offset(x: 1)))
-                    }
-            }
-        }
+
     }
 
     @ViewBuilder private func highlightedDay(for highlightDay: Forecastday, rect: CGRect) -> some View {
