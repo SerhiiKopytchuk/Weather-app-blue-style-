@@ -53,64 +53,17 @@ struct HomeView: View {
                 .frame(maxHeight: .infinity, alignment: .top)
 
                 Text(weatherViewModel.weather?.location.localtime.hourlyToDate.toDateTime ?? "")
+                Text(currentDay?.dateEpoch)
                     .font(.callout)
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.leading)
 
-                HStack {
-
-                    WebImage(url: self.weatherViewModel.weather?.current.condition.icon.toImageURL)
-                            .resizable()
-                            .frame(width: imageWidth, height: imageWidth, alignment: .leading)
-
-
-                    VStack {
-                        HStack {
-                            Image("ic_temp")
-                                .font(.title3)
-                                .foregroundColor(.white)
-
-                            Text(weatherViewModel.maxAndMin)
-                                .font(.title3)
-                                .foregroundColor(.white)
-                                .bold()
-
-                            Spacer()
-                        }
-
-                        HStack {
-                            Image("ic_humidity")
-                                .font(.title3)
-                                .foregroundColor(.white)
-
-                            Text("\(weatherViewModel.weather?.current.humidity ?? 0)%")
-                                .font(.title3)
-                                .foregroundColor(.white)
-                                .bold()
-
-                            Spacer()
-                        }
-
-                        HStack {
-                            Image("ic_wind")
-                                .font(.title3)
-                                .foregroundColor(.white)
-
-                            Text("\(Int(weatherViewModel.weather?.current.windKph ?? 0))Kp/h")
-                                .font(.title3)
-                                .foregroundColor(.white)
-                                .bold()
-
-                            Spacer()
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
+                DayDetailedView(day: $currentDay, imageWidth: imageWidth)
 
             }
             .clipShape(Rectangle())
-            .frame(maxWidth: .infinity, alignment: .center)
+            .frame(maxWidth: .infinity)
             .frame(height: headerHeight)
             .background {
                 Color.darkBlue

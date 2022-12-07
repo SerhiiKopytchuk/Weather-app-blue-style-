@@ -81,7 +81,7 @@ struct Forecast: Codable {
 }
 
 // MARK: - ForecastDay
-struct Forecastday: Codable, Identifiable, Equatable {
+struct Forecastday: Codable, Identifiable {
 
     let id = UUID().uuidString
     let date: String
@@ -94,9 +94,26 @@ struct Forecastday: Codable, Identifiable, Equatable {
         case dateEpoch = "date_epoch"
         case day, hour
     }
+}
 
+extension Forecastday: Equatable {
     static func == (lhs: Forecastday, rhs: Forecastday) -> Bool {
         lhs.id == rhs.id
+    }
+}
+
+extension Forecastday {
+    var avgWind: Double {
+        var result = 0.0
+        self.hour.forEach { oneHour in
+            result += oneHour.windKph
+        }
+        return result/Double(hour.count)
+    }
+}
+extension Forecastday {
+    var maxAndMin: String {
+        "\(self.day.maxtempC)°/\(self.day.mintempC)°"
     }
 }
 
