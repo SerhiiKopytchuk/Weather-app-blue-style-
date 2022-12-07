@@ -52,8 +52,7 @@ struct HomeView: View {
                 .padding(.horizontal)
                 .frame(maxHeight: .infinity, alignment: .top)
 
-                Text(weatherViewModel.weather?.location.localtime.hourlyToDate.toDateTime ?? "")
-                Text(currentDay?.dateEpoch)
+                Text(currentDay?.dateEpoch.toDate.toDateTime ?? "")
                     .font(.callout)
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -70,18 +69,7 @@ struct HomeView: View {
                     .ignoresSafeArea()
             }
 
-
-
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack {
-                    ForEach(weatherViewModel.weather?.forecast.forecastday.first?.hour ?? [], id: \.id) { hour in
-                        if Date().sameDayAs(hour.time) && hour.time.hourlyToDate > Date() {
-                            HourListRow(hourForecast: hour)
-                                .padding(.horizontal, 15)
-                        }
-                    }
-                }
-            }
+            HourScrollView(currentDay: $currentDay)
             .clipShape(Rectangle())
             .frame(maxWidth: .infinity)
             .frame(height: hourlyForecastHeight)

@@ -54,7 +54,7 @@ struct DayDetailedView: View {
                         .font(.title3)
                         .foregroundColor(.white)
 
-                    Text("\(Int(day?.avgWind ?? 0.0 ))Kp/h")
+                    Text("\(Int(day?.avgWind ?? 0.0 )) Kp/h")
                         .font(.title3)
                         .foregroundColor(.white)
                         .bold()

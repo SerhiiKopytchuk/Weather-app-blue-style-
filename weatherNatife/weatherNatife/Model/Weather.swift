@@ -113,7 +113,7 @@ extension Forecastday {
 }
 extension Forecastday {
     var maxAndMin: String {
-        "\(self.day.maxtempC)°/\(self.day.mintempC)°"
+        "\(self.day.maxtempC)°/\(self.day.mintempC)°C"
     }
 }
 
