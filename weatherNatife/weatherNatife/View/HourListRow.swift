@@ -15,7 +15,7 @@ struct HourListRow: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack(alignment: .top, spacing: 0) {
-                Text(hourForecast.time.toDate.toHour)
+                Text(hourForecast.time.hourlyToDate.toHour)
                     .bold()
                     .font(.callout)
                     .foregroundColor(.white)

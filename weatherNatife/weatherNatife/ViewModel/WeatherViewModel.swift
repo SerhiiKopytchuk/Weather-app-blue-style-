@@ -30,6 +30,7 @@ class WeatherViewModel: ObservableObject {
 
                 do {
                     self.weather = try JSONDecoder().decode(Weather.self, from: data)
+
                 } catch {
                     print(error)
                 }

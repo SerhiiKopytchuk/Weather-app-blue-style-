@@ -19,6 +19,8 @@ struct HomeView: View {
 
     let imageWidth: CGFloat
 
+    @State var currentDay: Forecastday?
+
     @State var currentImageURL: URL?
 
     init() {
@@ -50,7 +52,7 @@ struct HomeView: View {
                 .padding(.horizontal)
                 .frame(maxHeight: .infinity, alignment: .top)
 
-                Text(weatherViewModel.weather?.location.localtime.toDate.toDateTime ?? "")
+                Text(weatherViewModel.weather?.location.localtime.hourlyToDate.toDateTime ?? "")
                     .font(.callout)
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -120,7 +122,7 @@ struct HomeView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack {
                     ForEach(weatherViewModel.weather?.forecast.forecastday.first?.hour ?? [], id: \.id) { hour in
-                        if Date().sameDayAs(hour.time) && hour.time.toDate > Date() {
+                        if Date().sameDayAs(hour.time) && hour.time.hourlyToDate > Date() {
                             HourListRow(hourForecast: hour)
                                 .padding(.horizontal, 15)
                         }
@@ -136,16 +138,53 @@ struct HomeView: View {
 
 
             ScrollView(showsIndicators: false) {
-                VStack {
+                VStack(spacing: 0) {
                     ForEach(  weatherViewModel.weather?.forecast.forecastday ?? [], id: \.id) { day in
-
+                        DayListRow(day: day, currentDay: $currentDay)
+                            .padding(.horizontal)
+                            .anchorPreference(key: BoundsPreference.self, value: .bounds, transform: { anchor in
+                                return [(day.id  ): anchor]
+                            })
                     }
                 }
             }
             .clipShape(Rectangle())
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .onChange(of: weatherViewModel.weather?.forecast.forecastday ?? [], perform: { forecastDays in
+            self.currentDay = forecastDays.first
+
+        })
+        .overlayPreferenceValue(BoundsPreference.self) { values in
+            if let currentDay {
+                    if let preference = values.first(where: { item in
+                        item.key == currentDay.id
+                    }) {
+                        GeometryReader { proxy in
+                            let rect = proxy[preference.value]
+                            highlightedDay(for: currentDay, rect: rect)
+                        }
+                        .transition(.asymmetric(insertion: .identity, removal: .offset(x: 1)))
+                    }
+            }
+        }
     }
+
+    @ViewBuilder private func highlightedDay(for highlightDay: Forecastday, rect: CGRect) -> some View {
+        DayListRow(day: highlightDay, currentDay: $currentDay)
+            .padding(.horizontal)
+            .background {
+                Rectangle()
+                    .fill(.white)
+                    .shadow(color: .blue, radius: 10, x: 0, y: 0)
+
+            }
+            .shadow(color: .blue.opacity(0.25), radius: 24, x: 0, y: 0)
+            .frame(width: rect.width, height: rect.height)
+            .offset(x: rect.minX, y: rect.minY)
+        
+    }
+
 }
 
 struct HomeView_Previews: PreviewProvider {
@@ -155,43 +194,3 @@ struct HomeView_Previews: PreviewProvider {
     }
 }
 
-extension String {
-    var toDate: Date {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
-        return dateFormatter.date(from: self) ?? Date()
-    }
-
-}
-
-extension Date {
-    var toDateTime: String {
-        let dateFormater = DateFormatter()
-        dateFormater.dateFormat = "E, d MMM"
-        return dateFormater.string(from: self)
-    }
-
-    var toHour: String {
-        let dateFormater = DateFormatter()
-        dateFormater.dateFormat = "HH"
-        return dateFormater.string(from: self)
-    }
-
-
-    var toDay: String {
-        let dateFormater = DateFormatter()
-        dateFormater.dateFormat = "E"
-        return dateFormater.string(from: self)
-
-    }
-
-    func sameDayAs(_ timeStr: String) -> Bool {
-         return Calendar.current.isDate(self, equalTo: timeStr.toDate, toGranularity: .day)
-    }
-}
-
-extension String {
-    var toImageURL: URL? {
-        return URL(string: "https:\(self)")
-    }
-}

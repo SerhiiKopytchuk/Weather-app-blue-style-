@@ -24,7 +24,7 @@ struct Current: Codable {
     let isDay: Int
     let condition: Condition
     let windMph: Double
-    let windKph, windDegree: Int
+    let windKph, windDegree: Double
     let windDir: WindDir
     let pressureMB: Int
     let pressureIn: Double
@@ -81,7 +81,7 @@ struct Forecast: Codable {
 }
 
 // MARK: - ForecastDay
-struct Forecastday: Codable, Identifiable {
+struct Forecastday: Codable, Identifiable, Equatable {
 
     let id = UUID().uuidString
     let date: String
@@ -93,6 +93,10 @@ struct Forecastday: Codable, Identifiable {
         case date
         case dateEpoch = "date_epoch"
         case day, hour
+    }
+
+    static func == (lhs: Forecastday, rhs: Forecastday) -> Bool {
+        lhs.id == rhs.id
     }
 }
 
