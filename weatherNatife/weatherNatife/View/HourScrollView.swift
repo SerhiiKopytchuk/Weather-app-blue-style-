@@ -15,7 +15,7 @@ struct HourScrollView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
                 ForEach(currentDay?.hour ?? [], id: \.id) { hour in
-                    if hour.time.hourlyToDate >= Date() {
+                    if hour.time.hourlyToDate > Date() || hour.time.hourlyToDate.thisHour() {
                         HourListRow(hourForecast: hour)
                             .padding(.horizontal, 15)
                             .padding(.trailing, hour == currentDay?.hour.last ? 35 : 0)
