@@ -10,7 +10,11 @@ import SDWebImageSwiftUI
 
 struct HourListRow: View {
 
+    // MARK: - variables
+
     let hourForecast: Hour
+
+    // MARK: - body
 
     var body: some View {
         VStack(spacing: 0) {
@@ -36,7 +40,6 @@ struct HourListRow: View {
                 .padding(.bottom)
 
         }
-
     }
 }
 

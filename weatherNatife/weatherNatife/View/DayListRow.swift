@@ -9,42 +9,53 @@ import SwiftUI
 import SDWebImageSwiftUI
 
 struct DayListRow: View {
-
+    
+    // MARK: - variables
+    
     let day: Forecastday
-
+    
     @Binding var currentDay: Forecastday?
     @Binding var isVertical: Bool
-
+    
     let maxAndMin: String
-
+    
+    // MARK: - computed properties
+    
     var isCurrentDay: Bool {
         return day.id == currentDay?.id
     }
-
+    
+    // MARK: - init
     init(day: Forecastday, currentDay: Binding<Forecastday?>, isVertical: Binding<Bool>) {
         self.day = day
         self._currentDay = currentDay
-
+        
         let max = day.day.maxtempC
         let min = day.day.mintempC
-
+        
         self.maxAndMin = "\(max)°/\(min)°"
         self._isVertical = isVertical
     }
-
+    
+    // MARK: - body
+    
     var body: some View {
         HStack {
+            
             Text(day.date.dailyToDate.toDay.uppercased())
                 .font(.title2)
                 .foregroundColor(isCurrentDay ? .blue : .black)
-
+            
             Spacer()
+            
             Text(maxAndMin)
                 .font(.title2)
                 .foregroundColor(isCurrentDay ? .blue : .black)
+            
             Spacer()
-
+            
             WebImage(url: day.day.condition.icon.toImageURL)
+            
         }
         .contentShape(Rectangle())
         .onTapGesture {
@@ -53,16 +64,5 @@ struct DayListRow: View {
             }
         }
         .padding(.trailing , isVertical ? 0 : 35)
-    }
-}
-
-
-
-struct BoundsPreference: PreferenceKey {
-
-    static var defaultValue: [String: Anchor<CGRect>] = [:]
-
-    static func reduce(value: inout [String: Anchor<CGRect>], nextValue: () -> [String: Anchor<CGRect>]) {
-        value.merge(nextValue()) {$1}
     }
 }
