@@ -9,10 +9,11 @@ import MapKit
 import SwiftUI
 struct MapView: View {
 
+    // MARK: - variables
+
     @Binding var isOpen: Bool
     @State private var locations: [Mark] = []
     @ObservedObject var weatherViewModel: WeatherViewModel
-
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(
             latitude: 25.7617,
@@ -23,6 +24,8 @@ struct MapView: View {
             longitudeDelta: 3
         )
     )
+
+    // MARK: - init
 
     init(isOpen: Binding<Bool>, locations: [Mark] = [], weatherViewModel: WeatherViewModel) {
         self._isOpen = isOpen
@@ -40,6 +43,8 @@ struct MapView: View {
         )
     }
 
+    // MARK: - body
+
     var body: some View {
         ZStack {
             Map(coordinateRegion: $region, annotationItems: locations) { location in
@@ -53,53 +58,61 @@ struct MapView: View {
                 .foregroundColor(.red)
                 .frame(width: 25, height: 25)
                 .offset(y: -13)
-            VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    Button(action: {
-                        weatherViewModel.changeLocation(location: region.center)
-                        isOpen = false
 
-                    }) {
-                        Image(systemName: "plus")
-                    }
-                    .padding()
-                    .background(Color.black.opacity(0.7))
-                    .foregroundColor(.white)
-                    .font(.title)
-                    .clipShape(Circle())
-                    .padding(20)
-                }
-            }
+            chooseButton
         }
         .ignoresSafeArea()
         .onAppear{
-            if let lastMark = weatherViewModel.lastMark {
-                self.region =  MKCoordinateRegion(
-                    center: lastMark.coordinate,
-                    span: MKCoordinateSpan(
-                        latitudeDelta: 3,
-                        longitudeDelta: 3
-                    )
-                )
-            } else {
-                self.region =  MKCoordinateRegion(
-                    center: CLLocationCoordinate2D(
-                        latitude: weatherViewModel.lastSavedLocation?.latitude ?? 25.7617,
-                        longitude: weatherViewModel.lastSavedLocation?.longitude ?? 80.198
-                    ),
-                    span: MKCoordinateSpan(
-                        latitudeDelta: 3,
-                        longitudeDelta: 3
-                    )
-                )
+            configure()
+        }
+    }
+
+    // MARK: - ViewBuilders
+
+    @ViewBuilder private var chooseButton: some View {
+        VStack {
+            Spacer()
+            HStack {
+                Spacer()
+                Button(action: {
+                    weatherViewModel.changeLocation(location: region.center)
+                    isOpen = false
+
+                }) {
+                    Image(systemName: "plus")
+                }
+                .padding()
+                .background(Color.black.opacity(0.7))
+                .foregroundColor(.white)
+                .font(.title)
+                .clipShape(Circle())
+                .padding(20)
             }
         }
     }
-}
-struct Mark: Identifiable {
-    let id = UUID()
-    let coordinate: CLLocationCoordinate2D
-    var show = false
+
+    // MARK: - functions
+
+    private func configure() {
+        if let lastMark = weatherViewModel.lastMark {
+            self.region =  MKCoordinateRegion(
+                center: lastMark.coordinate,
+                span: MKCoordinateSpan(
+                    latitudeDelta: 3,
+                    longitudeDelta: 3
+                )
+            )
+        } else {
+            self.region =  MKCoordinateRegion(
+                center: CLLocationCoordinate2D(
+                    latitude: weatherViewModel.lastSavedLocation?.latitude ?? 25.7617,
+                    longitude: weatherViewModel.lastSavedLocation?.longitude ?? 80.198
+                ),
+                span: MKCoordinateSpan(
+                    latitudeDelta: 3,
+                    longitudeDelta: 3
+                )
+            )
+        }
+    }
 }
