@@ -8,10 +8,17 @@
 import SwiftUI
 import Foundation
 
-// MARK: - LocationElement
-struct SearchLocation: Codable, Identifiable {
-    var id: Int
-    let name, region: String
-    let country: String
+struct Location: Codable {
+    let name, region, country: String
     let lat, lon: Double
+    let tzID: String
+    let localtimeEpoch: Int
+    let localtime: String
+
+    enum CodingKeys: String, CodingKey {
+        case name, region, country, lat, lon
+        case tzID = "tz_id"
+        case localtimeEpoch = "localtime_epoch"
+        case localtime
+    }
 }

@@ -29,6 +29,13 @@
 		401D4975293F60EB00A621EF /* Color+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401D4974293F60EB00A621EF /* Color+Extension.swift */; };
 		401D4977293F7B1D00A621EF /* HourListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 401D4976293F7B1D00A621EF /* HourListRow.swift */; };
 		40BD24D62941E0BC00403CEC /* LoaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BD24D52941E0BC00403CEC /* LoaderView.swift */; };
+		40BD24D82941E4E300403CEC /* Current.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BD24D72941E4E300403CEC /* Current.swift */; };
+		40BD24DA2941E4FE00403CEC /* Condition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BD24D92941E4FE00403CEC /* Condition.swift */; };
+		40BD24DC2941E51000403CEC /* Forecast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BD24DB2941E51000403CEC /* Forecast.swift */; };
+		40BD24DE2941E53300403CEC /* ForecastDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BD24DD2941E53300403CEC /* ForecastDay.swift */; };
+		40BD24E02941E54A00403CEC /* Day.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BD24DF2941E54A00403CEC /* Day.swift */; };
+		40BD24E22941E56100403CEC /* Hour.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BD24E12941E56100403CEC /* Hour.swift */; };
+		40BD24E42941E58500403CEC /* SearchLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BD24E32941E58500403CEC /* SearchLocation.swift */; };
 		40DF6C022940C61400F0B2DF /* ChooseLocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DF6C012940C61400F0B2DF /* ChooseLocationView.swift */; };
 		40DF6C042940F58700F0B2DF /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DF6C032940F58700F0B2DF /* Location.swift */; };
 		40DF6C082941312D00F0B2DF /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DF6C072941312D00F0B2DF /* MapView.swift */; };
@@ -77,6 +84,13 @@
 		401D4974293F60EB00A621EF /* Color+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extension.swift"; sourceTree = "<group>"; };
 		401D4976293F7B1D00A621EF /* HourListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HourListRow.swift; sourceTree = "<group>"; };
 		40BD24D52941E0BC00403CEC /* LoaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoaderView.swift; sourceTree = "<group>"; };
+		40BD24D72941E4E300403CEC /* Current.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Current.swift; sourceTree = "<group>"; };
+		40BD24D92941E4FE00403CEC /* Condition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Condition.swift; sourceTree = "<group>"; };
+		40BD24DB2941E51000403CEC /* Forecast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Forecast.swift; sourceTree = "<group>"; };
+		40BD24DD2941E53300403CEC /* ForecastDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastDay.swift; sourceTree = "<group>"; };
+		40BD24DF2941E54A00403CEC /* Day.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Day.swift; sourceTree = "<group>"; };
+		40BD24E12941E56100403CEC /* Hour.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hour.swift; sourceTree = "<group>"; };
+		40BD24E32941E58500403CEC /* SearchLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchLocation.swift; sourceTree = "<group>"; };
 		40DF6C002940B17B00F0B2DF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		40DF6C012940C61400F0B2DF /* ChooseLocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseLocationView.swift; sourceTree = "<group>"; };
 		40DF6C032940F58700F0B2DF /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
@@ -176,6 +190,13 @@
 			children = (
 				401D496A293F52C600A621EF /* Weather.swift */,
 				40DF6C032940F58700F0B2DF /* Location.swift */,
+				40BD24D72941E4E300403CEC /* Current.swift */,
+				40BD24D92941E4FE00403CEC /* Condition.swift */,
+				40BD24DB2941E51000403CEC /* Forecast.swift */,
+				40BD24DD2941E53300403CEC /* ForecastDay.swift */,
+				40BD24DF2941E54A00403CEC /* Day.swift */,
+				40BD24E12941E56100403CEC /* Hour.swift */,
+				40BD24E32941E58500403CEC /* SearchLocation.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -354,19 +375,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				401D4972293F5FB400A621EF /* HomeView.swift in Sources */,
+				40BD24E42941E58500403CEC /* SearchLocation.swift in Sources */,
+				40BD24DE2941E53300403CEC /* ForecastDay.swift in Sources */,
 				401A7CB02940820E007F6BF3 /* HourScrollView.swift in Sources */,
 				401A7CA8294077B6007F6BF3 /* String+Extension.swift in Sources */,
 				401A7CAC29407A4E007F6BF3 /* DayDetailedView.swift in Sources */,
 				40DF6C042940F58700F0B2DF /* Location.swift in Sources */,
 				401A7CB62940A81C007F6BF3 /* LocationManager.swift in Sources */,
+				40BD24D82941E4E300403CEC /* Current.swift in Sources */,
 				40DF6C022940C61400F0B2DF /* ChooseLocationView.swift in Sources */,
 				401D496D293F556900A621EF /* WeatherViewModel.swift in Sources */,
 				40DF6C082941312D00F0B2DF /* MapView.swift in Sources */,
 				401A7CAA294077E0007F6BF3 /* Date+Extension.swift in Sources */,
+				40BD24DA2941E4FE00403CEC /* Condition.swift in Sources */,
 				401D493B293F414700A621EF /* ContentView.swift in Sources */,
+				40BD24DC2941E51000403CEC /* Forecast.swift in Sources */,
+				40BD24E22941E56100403CEC /* Hour.swift in Sources */,
 				401D4939293F414700A621EF /* weatherNatifeApp.swift in Sources */,
 				401D496B293F52C600A621EF /* Weather.swift in Sources */,
 				40F3EBD4293FA66B0088F8EE /* DayListRow.swift in Sources */,
+				40BD24E02941E54A00403CEC /* Day.swift in Sources */,
 				401A7CAE294080A9007F6BF3 /* Int+Extension.swift in Sources */,
 				401A7CB429408AD6007F6BF3 /* AdaptiveView.swift in Sources */,
 				401D4977293F7B1D00A621EF /* HourListRow.swift in Sources */,
