@@ -12,16 +12,16 @@ struct DayListRow: View {
     
     // MARK: - variables
     
-    let day: Forecastday
+    private let day: Forecastday
     
     @Binding var currentDay: Forecastday?
     @Binding var isVertical: Bool
     
-    let maxAndMin: String
+    private let maxAndMin: String
     
     // MARK: - computed properties
     
-    var isCurrentDay: Bool {
+    private var isCurrentDay: Bool {
         return day.id == currentDay?.id
     }
     
