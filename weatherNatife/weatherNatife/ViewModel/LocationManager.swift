@@ -11,9 +11,13 @@ import Combine
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
+    // MARK: - variables
+
     private let locationManager = CLLocationManager()
     @Published var locationStatus: CLAuthorizationStatus?
     @Published var lastLocation: CLLocation?
+
+    // MARK: - init
 
     override init() {
         super.init()
@@ -23,16 +27,18 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationManager.startUpdatingLocation()
     }
 
+    // MARK: - functions
+
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-           switch locationManager.authorizationStatus {
+        switch locationManager.authorizationStatus {
 
-           case .authorizedWhenInUse, .authorizedAlways:
-               locationManager.startUpdatingLocation()
+        case .authorizedWhenInUse, .authorizedAlways:
+            locationManager.startUpdatingLocation()
 
-           default:
-               locationManager.stopUpdatingLocation()
-           }
-       }
+        default:
+            locationManager.stopUpdatingLocation()
+        }
+    }
 
 
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {

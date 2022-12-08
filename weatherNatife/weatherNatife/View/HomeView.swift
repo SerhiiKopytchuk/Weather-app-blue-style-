@@ -14,53 +14,62 @@ struct HomeView: View {
 
     // MARK: - variables
 
-    @EnvironmentObject var weatherViewModel: WeatherViewModel
+    @EnvironmentObject private var weatherViewModel: WeatherViewModel
 
-    var headerHeight: CGFloat
-    let hourlyForecastHeight: CGFloat
-    let screenWidth: CGFloat
+    private var headerHeight: CGFloat
+    private let hourlyForecastHeight: CGFloat
+    private let imageWidth: CGFloat
 
-    let imageWidth: CGFloat
+    private let notificationCenter = NotificationCenter.default
 
-    let notificationCenter = NotificationCenter.default
+    @State private var currentDay: Forecastday?
 
-    @State var currentDay: Forecastday?
+    @State private var receivedData = false
 
-    @State var receivedData = false
-
-    @State var daysViewHeight: CGFloat = 0
+    @State private var daysViewHeight: CGFloat = 0
 
     @State private var isVertical = false
 
-    @State var showBottomSheet = false
+    @State private var showBottomSheet = false
 
-    @State var showLocationRequestAlert = false
+    @State private var showLocationRequestAlert = false
+
+    // MARK: - computed property
+
+    private var presentedAlert: Bool {
+        return weatherViewModel.alertMessage != ""
+    }
+
+    private var screenWidth: CGFloat {
+        return min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
+    }
 
     // MARK: - init
 
     init() {
-        let width = UIScreen.main.bounds.size.width
-        let height = UIScreen.main.bounds.size.height
+        let size = UIScreen.main.bounds.size
+        let screenWidth = min(UIScreen.main.bounds.width,
+                              UIScreen.main.bounds.height)
 
-        if width < height {
+        self.isVertical = size.height > size.width
 
-            let screenHeightPercent = height / 100
+        if size.width < size.height {
 
-            self.screenWidth = width
+            let screenHeightPercent = size.height / 100
+
             self.imageWidth = screenWidth / 2
 
             self.headerHeight = 30 * screenHeightPercent
             self.hourlyForecastHeight = 15 * screenHeightPercent
 
         } else {
-
-            let screenHeightPercent = width / 100
+            let screenHeightPercent = size.width / 100
             
-            self.screenWidth = height
             self.imageWidth = screenWidth / 2
             self.headerHeight = 30 * screenHeightPercent
             self.hourlyForecastHeight = 15 * screenHeightPercent
         }
+
     }
 
     // MARK: - Body
@@ -71,15 +80,7 @@ struct HomeView: View {
 
                 header
 
-                HStack {
-                    Text(currentDay?.dateEpoch.toDate.toDateTime ?? "")
-                        .font(.callout)
-                        .foregroundColor(.white)
-                        .frame(alignment: .leading)
-                        .padding(.leading)
-
-                    Spacer()
-                }
+                dayDateView
 
                 DayDetailedView(day: $currentDay, imageWidth: imageWidth)
 
@@ -88,98 +89,53 @@ struct HomeView: View {
             .frame(width: screenWidth, height: headerHeight)
             .offset(y: receivedData ? 0 : (-headerHeight - 20))
             .background {
-                    Color.darkBlue
-                        .frame(height: screenWidth)
-                        .ignoresSafeArea()
+                Color.darkBlue
+                    .frame(height: screenWidth)
+                    .ignoresSafeArea()
             }
 
 
             VStack(spacing: 0) {
                 HourScrollView(currentDay: $currentDay)
-                .clipShape(Rectangle())
-                .frame(maxWidth: .infinity)
-                .frame( height: hourlyForecastHeight)
-                .offset(x: receivedData ? 0 : (screenWidth + 20))
-                .background {
-                    Color.blue
-                }
+                    .clipShape(Rectangle())
+                    .frame(maxWidth: .infinity)
+                    .frame( height: hourlyForecastHeight)
+                    .offset(x: receivedData ? 0 : (screenWidth + 20))
+                    .background {
+                        Color.blue
+                    }
 
-                ScrollView(showsIndicators: false) {
-                    VStack(spacing: 0) {
-                        ForEach(  weatherViewModel.weather?.forecast.forecastday ?? [], id: \.id) { day in
-                            DayListRow(day: day, currentDay: $currentDay, isVertical: $isVertical)
-                                .padding(.horizontal)
-                                .anchorPreference(key: BoundsPreference.self, value: .bounds, transform: { anchor in
-                                    return [(day.id  ): anchor]
-                                })
-                        }
-                    }
-                    .overlayPreferenceValue(BoundsPreference.self) { values in
-                        if let currentDay {
-                                if let preference = values.first(where: { item in
-                                    item.key == currentDay.id
-                                }) {
-                                    GeometryReader { proxy in
-                                        let rect = proxy[preference.value]
-                                        highlightedDay(for: currentDay, rect: rect)
-                                    }
-                                    .transition(.asymmetric(insertion: .identity, removal: .offset(x: 1)))
-                                }
-                        }
-                    }
-                }
-                .clipShape(Rectangle())
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .readSize { size in
-                    self.daysViewHeight = size.height
-                }
-                .offset(y: receivedData ? 0 : (daysViewHeight + 20))
+                daysScrollView
             }
             .ignoresSafeArea()
 
         }
         .sheet(isPresented: $showBottomSheet) {
             ChooseLocationView(isOpen: $showBottomSheet)
-                        .presentationDetents([.large])
-                        .presentationDragIndicator(.visible)
-                }
-        .onAppear {
-            self.notificationCenter.addObserver(forName:  Notification.Name("receivedData"), object: nil, queue: .main) { notification in
-                self.currentDay = weatherViewModel.weather?.forecast.forecastday.first
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    withAnimation(.spring()) {
-                        self.receivedData = true
-                    }
-                }
-            }
-
-            let size = UIScreen.main.bounds.size
-            self.isVertical = size.height > size.width
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
         }
         .overlay(content: {
-            if weatherViewModel.isShowLoader {
+            loaderView
+        })
+        .alert(weatherViewModel.alertMessage, isPresented: .constant(presentedAlert), actions: {
+            Button("try again") {
+                weatherViewModel.getWeather { _ in
+                }
                 withAnimation {
-                    GeometryReader { reader in
-                        Loader()
-                            .position(x: reader.size.width/2, y: reader.size.height/2)
-                    }.background {
-                        Color.black
-                            .opacity(0.65)
-                            .edgesIgnoringSafeArea(.all)
-                    }
+                    weatherViewModel.alertMessage = ""
                 }
             }
         })
+        .onAppear {
+            self.subscribeToNotification()
+        }
         .onRotate { orientation in
-            if orientation == .landscapeLeft || orientation == .landscapeRight {
-                self.isVertical = false
-            } else {
-                isVertical = true
-            }
+            phoneRotated(orientation: orientation)
         }
     }
 
-     // MARK: - ViewBuilders
+    // MARK: - ViewBuilders
 
     @ViewBuilder private var header: some View {
         HStack {
@@ -216,6 +172,51 @@ struct HomeView: View {
         .frame(maxHeight: .infinity, alignment: .top)
     }
 
+    @ViewBuilder private var dayDateView: some View {
+        HStack {
+            Text(currentDay?.dateEpoch.toDate.toDateTime ?? "")
+                .font(.callout)
+                .foregroundColor(.white)
+                .frame(alignment: .leading)
+                .padding(.leading)
+
+            Spacer()
+        }
+    }
+
+    @ViewBuilder private var daysScrollView: some View {
+        ScrollView(showsIndicators: false) {
+            VStack(spacing: 0) {
+                ForEach(  weatherViewModel.weather?.forecast.forecastday ?? [], id: \.id) { day in
+                    DayListRow(day: day, currentDay: $currentDay, isVertical: $isVertical)
+                        .padding(.horizontal)
+                        .anchorPreference(key: BoundsPreference.self, value: .bounds, transform: { anchor in
+                            return [(day.id  ): anchor]
+                        })
+                }
+            }
+            .overlayPreferenceValue(BoundsPreference.self) { values in
+                if let currentDay {
+                    if let preference = values.first(where: { item in
+                        item.key == currentDay.id
+                    }) {
+                        GeometryReader { proxy in
+                            let rect = proxy[preference.value]
+                            highlightedDay(for: currentDay, rect: rect)
+                        }
+                        .transition(.asymmetric(insertion: .identity, removal: .offset(x: 1)))
+                    }
+                }
+            }
+        }
+        .clipShape(Rectangle())
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .readSize { size in
+            self.daysViewHeight = size.height
+        }
+        .offset(y: receivedData ? 0 : (daysViewHeight + 20))
+    }
+
     @ViewBuilder private func highlightedDay(for highlightDay: Forecastday, rect: CGRect) -> some View {
         DayListRow(day: highlightDay, currentDay: $currentDay, isVertical: $isVertical)
             .padding(.horizontal)
@@ -228,6 +229,41 @@ struct HomeView: View {
             .shadow(color: .blue.opacity(0.25), radius: 24, x: 0, y: 0)
             .frame(width: rect.width, height: rect.height)
             .offset(x: rect.minX, y: rect.minY)
+    }
+
+    @ViewBuilder private var loaderView: some View {
+        if weatherViewModel.isShowLoader {
+            withAnimation {
+                GeometryReader { reader in
+                    Loader()
+                        .position(x: reader.size.width/2, y: reader.size.height/2)
+                }.background {
+                    Color.black
+                        .opacity(0.65)
+                        .edgesIgnoringSafeArea(.all)
+                }
+            }
+        }
+    }
+
+    // MARK: - functions
+    private func subscribeToNotification() {
+        self.notificationCenter.addObserver(forName:  Notification.Name("receivedData"), object: nil, queue: .main) { notification in
+            self.currentDay = weatherViewModel.weather?.forecast.forecastday.first
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.spring()) {
+                    self.receivedData = true
+                }
+            }
+        }
+    }
+
+    private func phoneRotated(orientation: UIDeviceOrientation) {
+        if orientation == .landscapeLeft || orientation == .landscapeRight {
+            self.isVertical = false
+        } else {
+            isVertical = true
+        }
     }
 }
 

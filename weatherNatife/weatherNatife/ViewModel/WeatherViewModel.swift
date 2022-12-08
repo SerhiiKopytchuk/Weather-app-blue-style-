@@ -34,6 +34,8 @@ class WeatherViewModel: ObservableObject {
 
     @Published var isShowLoader = false
 
+    @Published var alertMessage = ""
+
     var weatherUrl = URL(string: "https://api.weatherapi.com/v1/forecast.json?key=d0a9ecd662d7487b911111422221903&q=London&days=10&aqi=no&alerts=no")
 
     // MARK: - computed properties
@@ -75,7 +77,7 @@ class WeatherViewModel: ObservableObject {
     }
 
     func switchToCurrentLocation(accessToLocationDenied: () -> Void) {
-        if locationManager.locationStatus == .authorizedAlways || locationManager.locationStatus == .authorizedWhenInUse {
+        if let _ = locationManager.lastLocation {
             self.weatherUrl = URL(string: "\(requestForecastString)&q=\(userLatitude),\(userLongitude)&days=10&aqi=no&alerts=no")
             getWeather { _ in }
         } else {
@@ -113,11 +115,11 @@ class WeatherViewModel: ObservableObject {
                         self?.weather = try JSONDecoder().decode(Weather.self, from: data)
 
                         self?.lastSavedLocation = CLLocationCoordinate2D(latitude: self?.weather?.location.lat ?? 0,
-                                                                   longitude: self?.weather?.location.lon ?? 0)
+                                                                         longitude: self?.weather?.location.lon ?? 0)
 
 
                         self?.saveCoordinates(coordinates: self?.lastSavedLocation ?? CLLocationCoordinate2D(latitude: 0,
-                                                                                                       longitude: 0))
+                                                                                                             longitude: 0))
                         self?.notificationCenter.post(name: Notification.Name("receivedData"), object: nil)
                         self?.hideLoader()
                     } catch {
@@ -128,6 +130,15 @@ class WeatherViewModel: ObservableObject {
 
             }
             task.resume()
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
+            if self.isShowLoader == true {
+                withAnimation(.easeInOut) {
+                    self.alertMessage = "Check your internet connection. Failed to load content"
+                    self.isShowLoader = false
+                }
+            }
         }
     }
 

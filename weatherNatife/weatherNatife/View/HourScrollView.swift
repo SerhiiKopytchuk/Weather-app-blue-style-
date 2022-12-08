@@ -9,7 +9,10 @@ import SwiftUI
 
 struct HourScrollView: View {
 
+    // MARK: - variables
     @Binding var currentDay: Forecastday?
+
+    // MARK: - body
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {

@@ -8,62 +8,51 @@
 import SwiftUI
 
 struct AdaptiveView<Content: View>: View {
-    var content: Content
 
-    @State var isVertical: Bool = true
+    // MARK: - variables
+
+    var content: Content
+    @State private var isVertical: Bool = true
+
+    // MARK: - init
 
     public init(@ViewBuilder content: () -> Content) {
         self.content = content()
-  }
-
-  var body: some View {
-      if !isVertical {
-          HStack(spacing: 0) {
-        content
-      }
-          .ignoresSafeArea(.all, edges: .bottom)
-      .onRotate { orientation in
-          if orientation == .landscapeLeft || orientation == .landscapeRight {
-              isVertical = false
-          } else {
-              isVertical = true
-          }
-      }
-    } else {
-        VStack(spacing: 0) {
-        content
-      }
-        .onAppear {
-            let size = UIScreen.main.bounds.size
-            self.isVertical = size.height > size.width
-        }
-      .onRotate { orientation in
-          if orientation == .landscapeLeft || orientation == .landscapeRight {
-              isVertical = false
-          } else {
-              isVertical = true
-          }
-      }
     }
-  }
-}
 
-struct DeviceRotationViewModifier: ViewModifier {
-    let action: (UIDeviceOrientation) -> Void
-
-    func body(content: Content) -> some View {
-        content
-            .onAppear()
-            .onReceive(NotificationCenter.default.publisher(for: UIDevice.orientationDidChangeNotification)) { _ in
-                action(UIDevice.current.orientation)
+    // MARK: - body
+    var body: some View {
+        if !isVertical {
+            HStack(spacing: 0) {
+                content
             }
+            .ignoresSafeArea(.all, edges: .bottom)
+            .onRotate { orientation in
+                deviceRotated(orientation: orientation)
+            }
+        } else {
+            VStack(spacing: 0) {
+                content
+            }
+            .ignoresSafeArea(.all, edges: .bottom)
+            .onAppear {
+                let size = UIScreen.main.bounds.size
+                self.isVertical = size.height > size.width
+            }
+            .onRotate { orientation in
+                deviceRotated(orientation: orientation)
+            }
+        }
     }
-}
 
+    // MARK: - functions
 
-extension View {
-    func onRotate(perform action: @escaping (UIDeviceOrientation) -> Void) -> some View {
-        self.modifier(DeviceRotationViewModifier(action: action))
+    private func deviceRotated(orientation: UIDeviceOrientation) {
+        if orientation == .landscapeLeft || orientation == .landscapeRight {
+            isVertical = false
+        } else {
+            isVertical = true
+        }
     }
 }
 
