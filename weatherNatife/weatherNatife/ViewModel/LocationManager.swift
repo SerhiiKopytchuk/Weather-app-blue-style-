@@ -23,22 +23,17 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         locationManager.startUpdatingLocation()
     }
 
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+           switch locationManager.authorizationStatus {
 
+           case .authorizedWhenInUse, .authorizedAlways:
+               locationManager.startUpdatingLocation()
 
-    var statusString: String {
-        guard let status = locationStatus else {
-            return "unknown"
-        }
+           default:
+               locationManager.stopUpdatingLocation()
+           }
+       }
 
-        switch status {
-        case .notDetermined: return "notDetermined"
-        case .authorizedWhenInUse: return "authorizedWhenInUse"
-        case .authorizedAlways: return "authorizedAlways"
-        case .restricted: return "restricted"
-        case .denied: return "denied"
-        default: return "unknown"
-        }
-    }
 
     func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus) {
         locationStatus = status

@@ -11,7 +11,7 @@ struct MapView: View {
 
     @Binding var isOpen: Bool
     @State private var locations: [Mark] = []
-    @EnvironmentObject var weatherViewModel: WeatherViewModel
+    @ObservedObject var weatherViewModel: WeatherViewModel
 
     @State private var region = MKCoordinateRegion(
         center: CLLocationCoordinate2D(
@@ -19,10 +19,26 @@ struct MapView: View {
             longitude: 80.1918
         ),
         span: MKCoordinateSpan(
-            latitudeDelta: 0.5,
-            longitudeDelta: 0.5
+            latitudeDelta: 3,
+            longitudeDelta: 3
         )
     )
+
+    init(isOpen: Binding<Bool>, locations: [Mark] = [], weatherViewModel: WeatherViewModel) {
+        self._isOpen = isOpen
+        self.locations = locations
+        self.weatherViewModel = weatherViewModel
+        self.region = MKCoordinateRegion(
+            center: CLLocationCoordinate2D(
+                latitude: weatherViewModel.lastSavedLocation?.latitude ?? 25.7617,
+                longitude: weatherViewModel.lastSavedLocation?.longitude ?? 80.1918
+            ),
+            span: MKCoordinateSpan(
+                latitudeDelta: 3,
+                longitudeDelta: 3
+            )
+        )
+    }
 
     var body: some View {
         ZStack {
@@ -63,19 +79,19 @@ struct MapView: View {
                 self.region =  MKCoordinateRegion(
                     center: lastMark.coordinate,
                     span: MKCoordinateSpan(
-                        latitudeDelta: 10,
-                        longitudeDelta: 10
+                        latitudeDelta: 3,
+                        longitudeDelta: 3
                     )
                 )
             } else {
                 self.region =  MKCoordinateRegion(
                     center: CLLocationCoordinate2D(
-                        latitude: weatherViewModel.userLatitudeDouble,
-                        longitude: weatherViewModel.userLongitudeDouble
+                        latitude: weatherViewModel.lastSavedLocation?.latitude ?? 25.7617,
+                        longitude: weatherViewModel.lastSavedLocation?.longitude ?? 80.198
                     ),
                     span: MKCoordinateSpan(
-                        latitudeDelta: 10,
-                        longitudeDelta: 10
+                        latitudeDelta: 3,
+                        longitudeDelta: 3
                     )
                 )
             }
@@ -86,10 +102,4 @@ struct Mark: Identifiable {
     let id = UUID()
     let coordinate: CLLocationCoordinate2D
     var show = false
-}
-
-struct MapView_Previews: PreviewProvider {
-    static var previews: some View {
-        MapView(isOpen: .constant(true))
-    }
 }

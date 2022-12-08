@@ -19,11 +19,9 @@ struct ChooseLocationView: View {
 
     @State var tab = "Search"
 
-    @State var currentLocation: Mark?
-
     @EnvironmentObject var weatherViewModel: WeatherViewModel
 
-    init(isOpen: Binding<Bool>, location: CLLocation) {
+    init(isOpen: Binding<Bool>) {
         self._isOpen = isOpen
         self.tab = tab
     }
@@ -73,7 +71,7 @@ struct ChooseLocationView: View {
                         .foregroundColor(.black)
                         .padding()
                         .onChange(of: searchText) { newValue in
-                            weatherViewModel.getLocations(text: newValue)
+                            weatherViewModel.getPlacesList(text: newValue)
                         }
 
                     Image("ic_search")
@@ -91,14 +89,14 @@ struct ChooseLocationView: View {
                     ForEach(weatherViewModel.locations) { location in
                         Text("\(location.name), \(location.country)")
                             .onTapGesture {
-                                weatherViewModel.changeLocation(text: location.name)
+                                weatherViewModel.changeLocation(cityName: location.name)
                                 self.isOpen = false
                             }
                     }
                 }
                 .listStyle(.inset)
             } else {
-                MapView(isOpen: $isOpen)
+                MapView(isOpen: $isOpen, weatherViewModel: weatherViewModel)
             }
         }
         .frame(maxWidth: .infinity)

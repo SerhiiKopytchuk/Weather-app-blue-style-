@@ -12,9 +12,6 @@ struct AdaptiveView<Content: View>: View {
 
     @State var isVertical: Bool = true
 
-    let width = UIScreen.main.bounds.size.width
-    let height = UIScreen.main.bounds.size.height
-
     public init(@ViewBuilder content: () -> Content) {
         self.content = content()
   }

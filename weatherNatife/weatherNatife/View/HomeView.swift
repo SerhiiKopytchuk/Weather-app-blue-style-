@@ -18,17 +18,13 @@ struct HomeView: View {
 
     var headerHeight: CGFloat
     let hourlyForecastHeight: CGFloat
-    let dailyForecastHeight: CGFloat
     let screenWidth: CGFloat
 
     let imageWidth: CGFloat
 
     let notificationCenter = NotificationCenter.default
-    @StateObject var locationManager = LocationManager()
 
     @State var currentDay: Forecastday?
-
-    @State var currentImageURL: URL?
 
     @State var receivedData = false
 
@@ -37,6 +33,8 @@ struct HomeView: View {
     @State private var isVertical = false
 
     @State var showBottomSheet = false
+
+    @State var showLocationRequestAlert = false
 
     // MARK: - init
 
@@ -53,8 +51,6 @@ struct HomeView: View {
 
             self.headerHeight = 30 * screenHeightPercent
             self.hourlyForecastHeight = 15 * screenHeightPercent
-            self.dailyForecastHeight = 40 * screenHeightPercent
-
 
         } else {
 
@@ -64,10 +60,7 @@ struct HomeView: View {
             self.imageWidth = screenWidth / 2
             self.headerHeight = 30 * screenHeightPercent
             self.hourlyForecastHeight = 15 * screenHeightPercent
-            self.dailyForecastHeight = 40 * screenHeightPercent
         }
-
-
     }
 
     // MARK: - Body
@@ -146,14 +139,14 @@ struct HomeView: View {
 
         }
         .sheet(isPresented: $showBottomSheet) {
-            ChooseLocationView(isOpen: $showBottomSheet, location: CLLocation(latitude: weatherViewModel.userLatitudeDouble, longitude: weatherViewModel.userLongitudeDouble))
+            ChooseLocationView(isOpen: $showBottomSheet)
                         .presentationDetents([.large])
                         .presentationDragIndicator(.visible)
                 }
         .onAppear {
             self.notificationCenter.addObserver(forName:  Notification.Name("receivedData"), object: nil, queue: .main) { notification in
                 self.currentDay = weatherViewModel.weather?.forecast.forecastday.first
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     withAnimation(.spring()) {
                         self.receivedData = true
                     }
@@ -163,6 +156,20 @@ struct HomeView: View {
             let size = UIScreen.main.bounds.size
             self.isVertical = size.height > size.width
         }
+        .overlay(content: {
+            if weatherViewModel.isShowLoader {
+                withAnimation {
+                    GeometryReader { reader in
+                        Loader()
+                            .position(x: reader.size.width/2, y: reader.size.height/2)
+                    }.background {
+                        Color.black
+                            .opacity(0.65)
+                            .edgesIgnoringSafeArea(.all)
+                    }
+                }
+            }
+        })
         .onRotate { orientation in
             if orientation == .landscapeLeft || orientation == .landscapeRight {
                 self.isVertical = false
@@ -190,7 +197,9 @@ struct HomeView: View {
             Spacer()
 
             Button {
-                self.weatherViewModel.getCurrentLocation()
+                self.weatherViewModel.switchToCurrentLocation {
+                    self.showLocationRequestAlert = true
+                }
             } label: {
                 Image("ic_my_location")
                     .foregroundColor(.white)
@@ -198,6 +207,11 @@ struct HomeView: View {
             }
 
         }
+        .alert("We need access to your location in order to use this function", isPresented: $showLocationRequestAlert, actions: {
+            Button("Cancel") {
+                showLocationRequestAlert = false
+            }
+        })
         .padding(.horizontal)
         .frame(maxHeight: .infinity, alignment: .top)
     }
