@@ -37,6 +37,7 @@
 		40BD24E22941E56100403CEC /* Hour.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BD24E12941E56100403CEC /* Hour.swift */; };
 		40BD24E42941E58500403CEC /* SearchLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BD24E32941E58500403CEC /* SearchLocation.swift */; };
 		40BD24E729420A0100403CEC /* BoundsPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BD24E629420A0100403CEC /* BoundsPreference.swift */; };
+		40BD24E929420CC800403CEC /* DeviceRotationViewModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40BD24E829420CC800403CEC /* DeviceRotationViewModifier.swift */; };
 		40DF6C022940C61400F0B2DF /* ChooseLocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DF6C012940C61400F0B2DF /* ChooseLocationView.swift */; };
 		40DF6C042940F58700F0B2DF /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DF6C032940F58700F0B2DF /* Location.swift */; };
 		40DF6C082941312D00F0B2DF /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40DF6C072941312D00F0B2DF /* MapView.swift */; };
@@ -93,6 +94,7 @@
 		40BD24E12941E56100403CEC /* Hour.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Hour.swift; sourceTree = "<group>"; };
 		40BD24E32941E58500403CEC /* SearchLocation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchLocation.swift; sourceTree = "<group>"; };
 		40BD24E629420A0100403CEC /* BoundsPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoundsPreference.swift; sourceTree = "<group>"; };
+		40BD24E829420CC800403CEC /* DeviceRotationViewModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceRotationViewModifier.swift; sourceTree = "<group>"; };
 		40DF6C002940B17B00F0B2DF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		40DF6C012940C61400F0B2DF /* ChooseLocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseLocationView.swift; sourceTree = "<group>"; };
 		40DF6C032940F58700F0B2DF /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
@@ -245,6 +247,7 @@
 			isa = PBXGroup;
 			children = (
 				40BD24E629420A0100403CEC /* BoundsPreference.swift */,
+				40BD24E829420CC800403CEC /* DeviceRotationViewModifier.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -413,6 +416,7 @@
 				401A7CB229408941007F6BF3 /* View+Extension.swift in Sources */,
 				401D4975293F60EB00A621EF /* Color+Extension.swift in Sources */,
 				40BD24E729420A0100403CEC /* BoundsPreference.swift in Sources */,
+				40BD24E929420CC800403CEC /* DeviceRotationViewModifier.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
