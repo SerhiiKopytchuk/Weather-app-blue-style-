@@ -9,16 +9,20 @@ import SwiftUI
 
 @main
 struct weatherNatifeApp: App {
+
+    let weatherViewModel = WeatherViewModel()
+
+    init() {
+        weatherViewModel.getWeather { error in
+            print(error ?? "")
+        }
+    }
+
     var body: some Scene {
         WindowGroup {
-            let weatherViewModel = WeatherViewModel()
 
             ContentView()
                 .environmentObject(weatherViewModel)
-                .onAppear {
-                    weatherViewModel.getForecastWeather { _ in }
-                    weatherViewModel.getCurrentWeather { _ in }
-                }
         }
     }
 }
