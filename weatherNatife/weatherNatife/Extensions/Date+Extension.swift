@@ -30,4 +30,8 @@ extension Date {
     func sameDayAs(_ timeStr: String) -> Bool {
          return Calendar.current.isDate(self, equalTo: timeStr.hourlyToDate, toGranularity: .day)
     }
+
+    func thisHour() -> Bool {
+         return Calendar.current.isDate(self, equalTo: Date(), toGranularity: .hour)
+    }
 }
