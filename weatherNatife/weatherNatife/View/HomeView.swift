@@ -18,7 +18,6 @@ struct HomeView: View {
 
     private var headerHeight: CGFloat
     private let hourlyForecastHeight: CGFloat
-    private let screenWidth: CGFloat
     private let imageWidth: CGFloat
 
     private let notificationCenter = NotificationCenter.default
@@ -37,34 +36,35 @@ struct HomeView: View {
 
     // MARK: - computed property
 
-    var presentedAlert: Bool {
+    private var presentedAlert: Bool {
         return weatherViewModel.alertMessage != ""
+    }
+
+    private var screenWidth: CGFloat {
+        return min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
     }
 
     // MARK: - init
 
     init() {
-        let width = UIScreen.main.bounds.size.width
-        let height = UIScreen.main.bounds.size.height
-
         let size = UIScreen.main.bounds.size
+        let screenWidth = min(UIScreen.main.bounds.width,
+                              UIScreen.main.bounds.height)
+
         self.isVertical = size.height > size.width
 
-        if width < height {
+        if size.width < size.height {
 
-            let screenHeightPercent = height / 100
+            let screenHeightPercent = size.height / 100
 
-            self.screenWidth = width
             self.imageWidth = screenWidth / 2
 
             self.headerHeight = 30 * screenHeightPercent
             self.hourlyForecastHeight = 15 * screenHeightPercent
 
         } else {
-
-            let screenHeightPercent = width / 100
+            let screenHeightPercent = size.width / 100
             
-            self.screenWidth = height
             self.imageWidth = screenWidth / 2
             self.headerHeight = 30 * screenHeightPercent
             self.hourlyForecastHeight = 15 * screenHeightPercent

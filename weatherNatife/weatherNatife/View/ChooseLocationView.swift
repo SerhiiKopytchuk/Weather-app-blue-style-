@@ -30,7 +30,7 @@ struct ChooseLocationView: View {
 
     // MARK: - computed property
 
-    var width: CGFloat {
+    private var width: CGFloat {
         return min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
     }
 
