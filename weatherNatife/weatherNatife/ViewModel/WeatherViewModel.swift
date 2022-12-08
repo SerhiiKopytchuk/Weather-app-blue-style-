@@ -77,7 +77,7 @@ class WeatherViewModel: ObservableObject {
     }
 
     func switchToCurrentLocation(accessToLocationDenied: () -> Void) {
-        if locationManager.locationStatus == .authorizedAlways || locationManager.locationStatus == .authorizedWhenInUse {
+        if let _ = locationManager.lastLocation {
             self.weatherUrl = URL(string: "\(requestForecastString)&q=\(userLatitude),\(userLongitude)&days=10&aqi=no&alerts=no")
             getWeather { _ in }
         } else {
