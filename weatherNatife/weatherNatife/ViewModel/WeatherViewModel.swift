@@ -19,6 +19,10 @@ class WeatherViewModel: ObservableObject {
     let requestedDataWebSite = "https://api.weatherapi.com/v1/"
     let key = "d0a9ecd662d7487b911111422221903"
 
+    let decoder = JSONDecoder()
+
+    private var subscriptions = Set<AnyCancellable>()
+
     enum UserDefaultsKeys: String {
         case lastSavedLatitude, lastSavedLongitude
     }
@@ -27,6 +31,9 @@ class WeatherViewModel: ObservableObject {
 
     @Published var weather: Weather?
 
+//    @Published var currentDay: Forecastday?
+    #warning("continue here")
+
     @Published var locations = [SearchLocation]()
 
     @Published var lastMark: Mark?
@@ -34,6 +41,7 @@ class WeatherViewModel: ObservableObject {
     @Published var isShowLoader = false
 
     @Published var alertMessage = ""
+
 
     var weatherUrl = URL(string: "https://api.weatherapi.com/v1/forecast.json?key=d0a9ecd662d7487b911111422221903&q=London&days=10&aqi=no&alerts=no")
 
@@ -87,20 +95,21 @@ class WeatherViewModel: ObservableObject {
     func getPlacesList(text: String) {
         guard let locationURL = URL(string: "\(requestedDataWebSite)search.json?key=\(key)&q=\(text)") else { return }
 
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            let task = URLSession.shared.dataTask(with: locationURL) { data, response, error in
-                guard let data, error == nil else { return }
-
-                DispatchQueue.main.async {
-                    do {
-                        self?.locations = try JSONDecoder().decode([SearchLocation].self, from: data)
-                    } catch {
-                        print(error)
-                    }
+        URLSession.shared
+            .dataTaskPublisher(for: locationURL)
+            .subscribe(on: DispatchQueue.global(qos: .userInteractive))
+            .map(\.data)
+            .decode(type: [SearchLocation].self, decoder: decoder)
+            .receive(on: DispatchQueue.main)
+            .retry(3)
+            .sink { competition in
+                if case .failure(let error) = competition {
+                    print(error)
                 }
+            } receiveValue: { value in
+                self.locations = value
             }
-            task.resume()
-        }
+            .store(in: &subscriptions)
     }
 
 
@@ -110,17 +119,18 @@ class WeatherViewModel: ObservableObject {
 
         guard let weatherUrl = weatherUrl else { return }
 
-        _ = URLSession.shared
+
+        URLSession.shared
             .dataTaskPublisher(for: weatherUrl)
             .subscribe(on: DispatchQueue.global(qos: .userInteractive))
             .map(\.data)
-            .decode(type: Weather.self, decoder: JSONDecoder())
+            .decode(type: Weather.self, decoder: decoder)
             .receive(on: DispatchQueue.main)
+            .retry(3)
             .sink { competition in
-
                 if case .failure(let error) = competition {
                     self.hideLoader()
-                    self.alertMessage = "failed to get data \(error)"
+                    self.alertMessage = "failed to get data \(error.localizedDescription)"
                 } else {
                     self.hideLoader()
                 }
@@ -129,20 +139,13 @@ class WeatherViewModel: ObservableObject {
                 self.weather = weather
 
                 self.lastSavedLocation = CLLocationCoordinate2D(latitude: self.weather?.location.lat ?? 0,
-                                                                 longitude: self.weather?.location.lon ?? 0)
+                                                                longitude: self.weather?.location.lon ?? 0)
 
                 self.saveCoordinates(coordinates: self.lastSavedLocation)
                 self.hideLoader()
             }
+            .store(in: &subscriptions)
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
-            if self.isShowLoader == true {
-                withAnimation(.easeInOut) {
-                    self.alertMessage = "Check your internet connection. Failed to load content"
-                    self.isShowLoader = false
-                }
-            }
-        }
     }
 
     private func showLoader() {
