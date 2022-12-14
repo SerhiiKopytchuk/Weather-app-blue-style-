@@ -20,8 +20,6 @@ struct HomeView: View {
     private let hourlyForecastHeight: CGFloat
     private let imageWidth: CGFloat
 
-    private let notificationCenter = NotificationCenter.default
-
     @State private var currentDay: Forecastday?
 
     @State private var receivedData = false
@@ -127,9 +125,16 @@ struct HomeView: View {
                 }
             }
         })
-        .onAppear {
-            self.subscribeToNotification()
-        }
+        .onReceive(weatherViewModel.$weather, perform: { output in
+            guard output != nil else { return }
+
+            self.currentDay = output?.forecast.forecastday.first
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.spring()) {
+                    self.receivedData = true
+                }
+            }
+        })
         .onRotate { orientation in
             phoneRotated(orientation: orientation)
         }
@@ -247,16 +252,6 @@ struct HomeView: View {
     }
 
     // MARK: - functions
-    private func subscribeToNotification() {
-        self.notificationCenter.addObserver(forName:  Notification.Name("receivedData"), object: nil, queue: .main) { notification in
-            self.currentDay = weatherViewModel.weather?.forecast.forecastday.first
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                withAnimation(.spring()) {
-                    self.receivedData = true
-                }
-            }
-        }
-    }
 
     private func phoneRotated(orientation: UIDeviceOrientation) {
         if orientation == .landscapeLeft || orientation == .landscapeRight {
