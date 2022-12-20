@@ -13,20 +13,28 @@ class WeatherViewModel: ObservableObject {
 
     // MARK: - vars
 
-    let userDefaults = UserDefaults.standard
-    let notificationCenter = NotificationCenter.default
     var locationManager = LocationManager()
 
     let requestedDataWebSite = "https://api.weatherapi.com/v1/"
     let key = "d0a9ecd662d7487b911111422221903"
 
+    let decoder = JSONDecoder()
+
+    private var subscriptions = Set<AnyCancellable>()
+
     enum UserDefaultsKeys: String {
         case lastSavedLatitude, lastSavedLongitude
     }
 
+    @AppStorage(UserDefaultsKeys.lastSavedLatitude.rawValue) var lastSavedLatitude: Double = 48.8566
+    @AppStorage(UserDefaultsKeys.lastSavedLongitude.rawValue) var lastSavedLongitude: Double = 2.3522
+
+
     @Published var lastSavedLocation: CLLocationCoordinate2D?
 
     @Published var weather: Weather?
+
+    @Published var currentDay: Forecastday?
 
     @Published var locations = [SearchLocation]()
 
@@ -35,6 +43,7 @@ class WeatherViewModel: ObservableObject {
     @Published var isShowLoader = false
 
     @Published var alertMessage = ""
+
 
     var weatherUrl = URL(string: "https://api.weatherapi.com/v1/forecast.json?key=d0a9ecd662d7487b911111422221903&q=London&days=10&aqi=no&alerts=no")
 
@@ -54,12 +63,8 @@ class WeatherViewModel: ObservableObject {
     // MARK: - init
 
     init() {
-        if let lastSavedLat = userDefaults.object(forKey: UserDefaultsKeys.lastSavedLatitude.rawValue) as? Double {
-            if let lastSavedLong = userDefaults.object(forKey: UserDefaultsKeys.lastSavedLongitude.rawValue) as? Double {
-                self.lastSavedLocation = CLLocationCoordinate2D(latitude: lastSavedLat, longitude: lastSavedLong)
-                self.weatherUrl = URL(string: "\(requestForecastString)&q=\(lastSavedLat),\(lastSavedLong)&days=10&aqi=no&alerts=no")
-            }
-        }
+        self.lastSavedLocation = CLLocationCoordinate2D(latitude: lastSavedLatitude, longitude: lastSavedLongitude)
+        self.weatherUrl = URL(string: "\(requestForecastString)&q=\(lastSavedLatitude),\(lastSavedLongitude)&days=10&aqi=no&alerts=no")
     }
 
     // MARK: - functions
@@ -87,59 +92,58 @@ class WeatherViewModel: ObservableObject {
     
     func getPlacesList(text: String) {
         guard let locationURL = URL(string: "\(requestedDataWebSite)search.json?key=\(key)&q=\(text)") else { return }
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            let task = URLSession.shared.dataTask(with: locationURL) { data, response, error in
-                guard let data, error == nil else { return }
 
-                DispatchQueue.main.async {
-                    do {
-                        self?.locations = try JSONDecoder().decode([SearchLocation].self, from: data)
-                    } catch {
-                        print(error)
-                    }
+        URLSession.shared
+            .dataTaskPublisher(for: locationURL)
+            .subscribe(on: DispatchQueue.global(qos: .userInteractive))
+            .map(\.data)
+            .decode(type: [SearchLocation].self, decoder: decoder)
+            .receive(on: DispatchQueue.main)
+            .retry(3)
+            .sink { competition in
+                if case .failure(let error) = competition {
+                    print(error)
                 }
+            } receiveValue: { value in
+                self.locations = value
             }
-            task.resume()
-        }
+            .store(in: &subscriptions)
     }
 
 
     func getWeather(competition: (Error?) -> Void) {
+
         showLoader()
-        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
-            guard let weatherUrl = self?.weatherUrl else { return }
-            let task = URLSession.shared.dataTask(with: weatherUrl) { data, response, error in
-                guard let data, error == nil else { return }
-                DispatchQueue.main.async {
-                    do {
-                        self?.weather = try JSONDecoder().decode(Weather.self, from: data)
 
-                        self?.lastSavedLocation = CLLocationCoordinate2D(latitude: self?.weather?.location.lat ?? 0,
-                                                                         longitude: self?.weather?.location.lon ?? 0)
+        guard let weatherUrl = weatherUrl else { return }
 
 
-                        self?.saveCoordinates(coordinates: self?.lastSavedLocation ?? CLLocationCoordinate2D(latitude: 0,
-                                                                                                             longitude: 0))
-                        self?.notificationCenter.post(name: Notification.Name("receivedData"), object: nil)
-                        self?.hideLoader()
-                    } catch {
-                        print(error)
-                        self?.hideLoader()
-                    }
+        URLSession.shared
+            .dataTaskPublisher(for: weatherUrl)
+            .subscribe(on: DispatchQueue.global(qos: .userInteractive))
+            .map(\.data)
+            .decode(type: Weather.self, decoder: decoder)
+            .receive(on: DispatchQueue.main)
+            .retry(3)
+            .sink { competition in
+                if case .failure(let error) = competition {
+                    self.hideLoader()
+                    self.alertMessage = "failed to get data \(error.localizedDescription)"
+                } else {
+                    self.hideLoader()
                 }
+            } receiveValue: { weather in
 
-            }
-            task.resume()
-        }
+                self.weather = weather
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 10) {
-            if self.isShowLoader == true {
-                withAnimation(.easeInOut) {
-                    self.alertMessage = "Check your internet connection. Failed to load content"
-                    self.isShowLoader = false
-                }
+                self.lastSavedLocation = CLLocationCoordinate2D(latitude: self.weather?.location.lat ?? 0,
+                                                                longitude: self.weather?.location.lon ?? 0)
+
+                self.saveCoordinates(coordinates: self.lastSavedLocation)
+                self.hideLoader()
             }
-        }
+            .store(in: &subscriptions)
+
     }
 
     private func showLoader() {
@@ -154,8 +158,8 @@ class WeatherViewModel: ObservableObject {
         }
     }
 
-    func saveCoordinates(coordinates: CLLocationCoordinate2D) {
-        userDefaults.set(coordinates.latitude, forKey: UserDefaultsKeys.lastSavedLatitude.rawValue)
-        userDefaults.set(coordinates.longitude, forKey: UserDefaultsKeys.lastSavedLongitude.rawValue)
+    func saveCoordinates(coordinates: CLLocationCoordinate2D?) {
+        lastSavedLatitude = coordinates?.latitude ?? 0.0
+        lastSavedLongitude = coordinates?.longitude ?? 0.0
     }
 }
