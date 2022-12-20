@@ -31,7 +31,7 @@ class WeatherViewModel: ObservableObject {
 
     @Published var weather: Weather?
 
-//    @Published var currentDay: Forecastday?
+    @Published var currentDay: Forecastday?
     #warning("continue here")
 
     @Published var locations = [SearchLocation]()

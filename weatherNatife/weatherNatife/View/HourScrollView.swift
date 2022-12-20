@@ -10,18 +10,18 @@ import SwiftUI
 struct HourScrollView: View {
 
     // MARK: - variables
-    @Binding var currentDay: Forecastday?
+    @EnvironmentObject private var weatherViewModel: WeatherViewModel
 
     // MARK: - body
 
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
-                ForEach(currentDay?.hour ?? [], id: \.id) { hour in
+                ForEach(weatherViewModel.currentDay?.hour ?? [], id: \.id) { hour in
                     if hour.time.hourlyToDate > Date() || hour.time.hourlyToDate.thisHour() {
                         HourListRow(hourForecast: hour)
                             .padding(.horizontal, 15)
-                            .padding(.trailing, hour == currentDay?.hour.last ? 35 : 0)
+                            .padding(.trailing, hour == weatherViewModel.currentDay?.hour.last ? 35 : 0)
                     }
                 }
             }

@@ -20,8 +20,6 @@ struct HomeView: View {
     private let hourlyForecastHeight: CGFloat
     private let imageWidth: CGFloat
 
-    @State private var currentDay: Forecastday?
-
     @State private var receivedData = false
 
     @State private var daysViewHeight: CGFloat = 0
@@ -80,7 +78,7 @@ struct HomeView: View {
 
                 dayDateView
 
-                DayDetailedView(day: $currentDay, imageWidth: imageWidth)
+                DayDetailedView(imageWidth: imageWidth)
 
             }
             .clipShape(Rectangle())
@@ -94,7 +92,7 @@ struct HomeView: View {
 
 
             VStack(spacing: 0) {
-                HourScrollView(currentDay: $currentDay)
+                HourScrollView()
                     .clipShape(Rectangle())
                     .frame(maxWidth: .infinity)
                     .frame( height: hourlyForecastHeight)
@@ -128,7 +126,7 @@ struct HomeView: View {
         .onReceive(weatherViewModel.$weather, perform: { output in
             guard output != nil else { return }
 
-            self.currentDay = output?.forecast.forecastday.first
+            weatherViewModel.currentDay = output?.forecast.forecastday.first
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 withAnimation(.spring()) {
                     self.receivedData = true
@@ -179,7 +177,7 @@ struct HomeView: View {
 
     @ViewBuilder private var dayDateView: some View {
         HStack {
-            Text(currentDay?.dateEpoch.toDate.toDateTime ?? "")
+            Text(weatherViewModel.currentDay?.dateEpoch.toDate.toDateTime ?? "")
                 .font(.callout)
                 .foregroundColor(.white)
                 .frame(alignment: .leading)
@@ -193,7 +191,7 @@ struct HomeView: View {
         ScrollView(showsIndicators: false) {
             VStack(spacing: 0) {
                 ForEach(  weatherViewModel.weather?.forecast.forecastday ?? [], id: \.id) { day in
-                    DayListRow(day: day, currentDay: $currentDay, isVertical: $isVertical)
+                    DayListRow(day: day, isVertical: $isVertical)
                         .padding(.horizontal)
                         .anchorPreference(key: BoundsPreference.self, value: .bounds, transform: { anchor in
                             return [(day.id  ): anchor]
@@ -201,7 +199,7 @@ struct HomeView: View {
                 }
             }
             .overlayPreferenceValue(BoundsPreference.self) { values in
-                if let currentDay {
+                if let currentDay = weatherViewModel.currentDay {
                     if let preference = values.first(where: { item in
                         item.key == currentDay.id
                     }) {
@@ -223,7 +221,7 @@ struct HomeView: View {
     }
 
     @ViewBuilder private func highlightedDay(for highlightDay: Forecastday, rect: CGRect) -> some View {
-        DayListRow(day: highlightDay, currentDay: $currentDay, isVertical: $isVertical)
+        DayListRow(day: highlightDay, isVertical: $isVertical)
             .padding(.horizontal)
             .background {
                 Rectangle()

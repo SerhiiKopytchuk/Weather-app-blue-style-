@@ -13,8 +13,8 @@ struct DayListRow: View {
     // MARK: - variables
     
     private let day: Forecastday
-    
-    @Binding var currentDay: Forecastday?
+
+    @EnvironmentObject private var weatherViewModel: WeatherViewModel
     @Binding var isVertical: Bool
     
     private let maxAndMin: String
@@ -22,14 +22,13 @@ struct DayListRow: View {
     // MARK: - computed properties
     
     private var isCurrentDay: Bool {
-        return day.id == currentDay?.id
+        return day.id == weatherViewModel.currentDay?.id
     }
     
     // MARK: - init
-    init(day: Forecastday, currentDay: Binding<Forecastday?>, isVertical: Binding<Bool>) {
+    init(day: Forecastday, isVertical: Binding<Bool>) {
         self.day = day
-        self._currentDay = currentDay
-        
+
         let max = day.day.maxtempC
         let min = day.day.mintempC
         
@@ -60,7 +59,7 @@ struct DayListRow: View {
         .contentShape(Rectangle())
         .onTapGesture {
             withAnimation(.interactiveSpring()) {
-                currentDay = day
+                weatherViewModel.currentDay = day
             }
         }
         .padding(.trailing , isVertical ? 0 : 35)

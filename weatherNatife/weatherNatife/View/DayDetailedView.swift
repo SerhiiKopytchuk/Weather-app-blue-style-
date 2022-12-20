@@ -12,7 +12,7 @@ struct DayDetailedView: View {
 
     // MARK: - variables
 
-    @Binding var day: Forecastday?
+    @EnvironmentObject private var weatherViewModel: WeatherViewModel
 
     let imageWidth: CGFloat
 
@@ -20,7 +20,8 @@ struct DayDetailedView: View {
 
     var body: some View {
         HStack {
-            WebImage(url: self.day?.day.condition.icon.toImageURL)
+
+            WebImage(url: self.weatherViewModel.currentDay?.day.condition.icon.toImageURL)
                     .resizable()
                     .frame(width: imageWidth, height: imageWidth, alignment: .leading)
 
@@ -42,7 +43,7 @@ struct DayDetailedView: View {
                 .font(.title3)
                 .foregroundColor(.white)
 
-            Text(day?.maxAndMin ?? "")
+            Text(self.weatherViewModel.currentDay?.maxAndMin ?? "")
                 .font(.title3)
                 .foregroundColor(.white)
                 .bold()
@@ -57,7 +58,7 @@ struct DayDetailedView: View {
                 .font(.title3)
                 .foregroundColor(.white)
 
-            Text("\(day?.day.avghumidity ?? 0)%")
+            Text("\(self.weatherViewModel.currentDay?.day.avghumidity ?? 0)%")
                 .font(.title3)
                 .foregroundColor(.white)
                 .bold()
@@ -72,7 +73,7 @@ struct DayDetailedView: View {
                 .font(.title3)
                 .foregroundColor(.white)
 
-            Text("\(Int(day?.avgWind ?? 0.0 )) Kp/h")
+            Text("\(Int(self.weatherViewModel.currentDay?.avgWind ?? 0.0 )) Kp/h")
                 .font(.title3)
                 .foregroundColor(.white)
                 .bold()
