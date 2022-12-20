@@ -13,7 +13,6 @@ class WeatherViewModel: ObservableObject {
 
     // MARK: - vars
 
-    let userDefaults = UserDefaults.standard
     var locationManager = LocationManager()
 
     let requestedDataWebSite = "https://api.weatherapi.com/v1/"
@@ -27,12 +26,15 @@ class WeatherViewModel: ObservableObject {
         case lastSavedLatitude, lastSavedLongitude
     }
 
+    @AppStorage(UserDefaultsKeys.lastSavedLatitude.rawValue) var lastSavedLatitude: Double = 48.8566
+    @AppStorage(UserDefaultsKeys.lastSavedLongitude.rawValue) var lastSavedLongitude: Double = 2.3522
+
+
     @Published var lastSavedLocation: CLLocationCoordinate2D?
 
     @Published var weather: Weather?
 
     @Published var currentDay: Forecastday?
-    #warning("continue here")
 
     @Published var locations = [SearchLocation]()
 
@@ -61,12 +63,8 @@ class WeatherViewModel: ObservableObject {
     // MARK: - init
 
     init() {
-        if let lastSavedLat = userDefaults.object(forKey: UserDefaultsKeys.lastSavedLatitude.rawValue) as? Double {
-            if let lastSavedLong = userDefaults.object(forKey: UserDefaultsKeys.lastSavedLongitude.rawValue) as? Double {
-                self.lastSavedLocation = CLLocationCoordinate2D(latitude: lastSavedLat, longitude: lastSavedLong)
-                self.weatherUrl = URL(string: "\(requestForecastString)&q=\(lastSavedLat),\(lastSavedLong)&days=10&aqi=no&alerts=no")
-            }
-        }
+        self.lastSavedLocation = CLLocationCoordinate2D(latitude: lastSavedLatitude, longitude: lastSavedLongitude)
+        self.weatherUrl = URL(string: "\(requestForecastString)&q=\(lastSavedLatitude),\(lastSavedLongitude)&days=10&aqi=no&alerts=no")
     }
 
     // MARK: - functions
@@ -161,7 +159,7 @@ class WeatherViewModel: ObservableObject {
     }
 
     func saveCoordinates(coordinates: CLLocationCoordinate2D?) {
-        userDefaults.set(coordinates?.latitude ?? 0.0, forKey: UserDefaultsKeys.lastSavedLatitude.rawValue)
-        userDefaults.set(coordinates?.longitude ?? 0.0, forKey: UserDefaultsKeys.lastSavedLongitude.rawValue)
+        lastSavedLatitude = coordinates?.latitude ?? 0.0
+        lastSavedLongitude = coordinates?.longitude ?? 0.0
     }
 }
